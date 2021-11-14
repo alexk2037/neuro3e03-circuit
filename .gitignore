@@ -23,3 +23,6 @@ venv.bak/
 
 # Cython debug symbols
 cython_debug/
+
+# vscode
+.vscode/
