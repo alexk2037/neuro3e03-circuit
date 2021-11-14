@@ -22,7 +22,7 @@ iclamp.delay = 2
 iclamp.dur = 0.1 * ms
 iclamp.amp = 2
 
-# Add excitatory synapses from neuronA axon end -> neuronB soma 
+# Add inhibitory synapses from neuronA axon end -> neuronB soma 
 syn_excite = h.ExpSyn(neuronB.soma(0.5))
 syn_excite.e = -120 * mV
 syn_excite.tau = 2
