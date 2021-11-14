@@ -9,14 +9,14 @@ import matplotlib.pyplot as plt
 from neurons.simpleneuron import SimpleNeuron
 
 # Initialize cells
-neuronA = SimpleNeuron(0, soma_diameter=15, axon_length=200)
-neuronB = SimpleNeuron(1, soma_diameter=15, axon_length=500)
+neuronA = SimpleNeuron(gid=0, soma_diameter=15, axon_length=200)
+neuronB = SimpleNeuron(gid=1, soma_diameter=15, axon_length=500)
 
 #
 #  A---< B---<
 #
 
-# Add stimulus current to neuronA
+# Add stimulus current to neuronA soma
 iclamp = h.IClamp(neuronA.soma(0.5))
 iclamp.delay = 2
 iclamp.dur = 0.1 * ms
@@ -27,25 +27,29 @@ syn_excite = h.ExpSyn(neuronB.soma(0.5))
 syn_excite.e = -120 * mV
 syn_excite.tau = 2
 
-network_connection_AB = h.NetCon(neuronA.axon(1)._ref_v, syn_excite, sec=neuronA.axon)
-network_connection_AB.delay = 1 * ms
-network_connection_AB.weight[0] = 0.04
+# netcon = network connection
+netcon_AB = h.NetCon(neuronA.axon(1)._ref_v, syn_excite, sec=neuronA.axon)
+netcon_AB.delay = 1 * ms
+netcon_AB.weight[0] = 0.04
 
-# Initialize recording vectors
-things_to_record = [
-    neuronA.soma(0.5)._ref_v,
-    neuronA.axon(1)._ref_v,
-    neuronB.soma(0.5)._ref_v
+# Initalize recording vectors
+locations_to_record = [
+    neuronA.soma(0.5),
+    neuronA.axon(1),
+    neuronB.soma(0.5)
 ]
 
-recordings = [h.Vector().record(thing) for thing in things_to_record]
-t = h.Vector().record(h._ref_t)                     # Time stamp vector
+v_recordings = [h.Vector().record(thing._ref_v) for thing in locations_to_record] # Voltage recording vectors
+t = h.Vector().record(h._ref_t) # Time stamp vector
 
-# Experimental Manipulations
+# Run experiment
 h.finitialize(-65 * mV)
 h.continuerun(40 * ms)
 
-fig, ax = plt.subplots(1,1)
-for recording in recordings:
-    ax.plot(t, recording)
+# Plot results
+fig, axes = plt.subplots(1,3)
+fig.suptitle('Membrane Potential (mV) vs Time (ms)')
+for recording, axis, location in zip(v_recordings, axes, locations_to_record):
+    axis.plot(t, recording)
+    axis.set_title(str(location))
 plt.show()
