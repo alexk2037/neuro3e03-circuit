@@ -69,14 +69,9 @@ t = h.Vector().record(h._ref_t)
 h.finitialize(-65 * mV)
 h.continuerun(100)
 
-# Plot cells
+# Plot cells in space
 def get_all_neuron_morphology_df(neurons: list) -> pd.DataFrame:
-  all_morphology = {
-    "x": [],
-    "y": [],
-    "z": [],
-    "sectiontype": []
-  }
+  all_morphology = {"x": [], "y": [], "z": [], "sectiontype": []}
   for some_neuron in neurons:
     morphology_pts = some_neuron.get_morphology_pts()
     for sectiontype in morphology_pts.keys():
