@@ -9,6 +9,7 @@ Modified on Tues Nov 16 2021
 """
 
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, TextBox
 import pandas as pd
 import plotly.express as px
 
@@ -69,7 +70,7 @@ t = h.Vector().record(h._ref_t)
 h.finitialize(-65 * mV)
 h.continuerun(100)
 
-# Plot cells in space
+# Plot cells in space (df = DataFrame)
 def get_all_neuron_morphology_df(neurons: list) -> pd.DataFrame:
   all_morphology = {"x": [], "y": [], "z": [], "sectiontype": []}
   for some_neuron in neurons:
@@ -99,5 +100,42 @@ for some_neuron, ax in zip(neurons, axes):
   ax.set_xlabel('t (ms)')
   ax.set_ylabel('v (mV)')
   ax.set_title(some_neuron._gid)
+plt.subplots_adjust(left=0.2)
+
+# Paramter update function template
+def update_param(param_obj, param):
+  def update_graphs(val):
+    new_val = float(val)
+    setattr(param_obj, param, new_val)
+    print(f'Updated parameter: {param_obj}.{param} = { getattr(param_obj, param) }')
+    # Rerun simulation
+    h.finitialize(-65 * mV)
+    h.continuerun(100)
+    print('Updated Simulation')
+    # Update axes
+    for some_neuron, ax in zip(neurons, axes):
+      line = ax.lines[0]
+      line.set_ydata(some_neuron.soma_v)
+
+    print('Updated graphs')
+    fig.canvas.draw_idle()
+  return update_graphs
+
+controllable_params = {
+  syn_inhibit_BA: ["e", "tau"],
+  iclamp: ["delay", "dur", "amp"]
+}
+
+controls = []
+
+for i, (param_obj, params) in enumerate(controllable_params.items()):
+  for j, param in enumerate(params):
+    print(f'{param_obj = }, { param = }: { getattr(param_obj, param) }')
+    # xposition, yposition, width and height
+    param_axis = plt.axes([0.1, 0.12*i + 0.05*j + 0.5, 0.05, 0.05])
+    param_control = TextBox(param_axis, f'{ param_obj }.{param}')
+    param_control.on_submit(update_param(param_obj, param))
+    param_control.set_val(str(getattr(param_obj, param)))
+    controls.append(param_control)
 
 plt.show()
