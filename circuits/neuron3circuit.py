@@ -34,17 +34,17 @@ iclamp.delay = 10
 iclamp.dur = 80 * ms
 iclamp.amp = 10
 
-# Add excitatory synapses from neuronA to neuronB. 
+# Add excitatory synapses from neuronA to neuronB.
 syn_excite_AB = h.ExpSyn(neuronB.soma(0.5))
 syn_excite_AB.e = 40 * mV
 syn_excite_AB.tau = 2
 
-# Add inhibitory synapses from neuronB to neuronA. 
+# Add inhibitory synapses from neuronB to neuronA.
 syn_inhibit_BA = h.ExpSyn(neuronA.soma(0.5))
-syn_inhibit_BA.e = 40 * mV
+syn_inhibit_BA.e = -65 * mV
 syn_inhibit_BA.tau = 2
 
-# Add excitatory synapses from neuronA to neuronC. 
+# Add excitatory synapses from neuronA to neuronC.
 syn_excite_AC = h.ExpSyn(neuronC.soma(0.5))
 syn_excite_AC.e = 40 * mV
 syn_excite_AC.tau = 2
@@ -84,12 +84,12 @@ neurons = [neuronA, neuronB, neuronC]
 
 neuron_morphology_df = get_all_neuron_morphology_df(neurons)
 
-fig = px.scatter_3d(neuron_morphology_df, 
-  x='x', 
-  y='y', 
+fig = px.scatter_3d(neuron_morphology_df,
+  x='x',
+  y='y',
   z='z',
   color='sectiontype')
-fig.show()
+# fig.show()
 
 # Plot membrane voltage data
 fig, axes = plt.subplots(1, len(neurons))
